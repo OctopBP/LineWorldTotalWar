@@ -21,7 +21,7 @@ namespace LineWorldTotalWar.field {
         Field unitTurn(UnitInField unit, Field field) {
             var (unit0, field0) = new Heal(unit, field).execute();
             var (unit1, field1) = new Attack(unit0, field0).execute();
-            var field2 = field1.removeDeadBodyes();
+            var field2 = field1.removeDeadBodies();
             var (unit3, field3) = new AttackCastle(unit1, field2).execute();
             var (unit4, field4) = new Move(unit3, field3).execute();
 
@@ -35,9 +35,10 @@ namespace LineWorldTotalWar.field {
                 yield return current;
 
             while (current.units.Any(u => !u.moved)) {
-                var unit = Enumerable.First(current.units
+                var unit = current.units
                     .Where(u => !u.moved)
-                    .OrderBy(u => MathF.Abs(u.position - u.playerNo.spawnPosition(size))));
+                    .OrderBy(u => MathF.Abs(u.position - u.playerNo.spawnPosition(size)))
+                    .First();
 
                 current = unitTurn(unit, current);
 
@@ -50,7 +51,7 @@ namespace LineWorldTotalWar.field {
             return next.IsSome ? next.ValueUnsafe() : this;
         }
 
-        Field removeDeadBodyes() {
+        Field removeDeadBodies() {
             return this with { units = units.Filter(u => u.hp > 0) };
         }
 
